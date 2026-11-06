@@ -23,7 +23,25 @@ Delete these instructions as you replace them with your code.
 #    Excellent : also add over_limit_count as a class-level running total -
 #                see the note below.
 
-# your class goes here
+
+class Record:
+    def __init__(self, label, value, limit):
+        """Store the server's details."""
+        self.label = label
+        self.value = value
+        self.limit = limit
+
+    def status(self):
+        """Return the server's storage status."""
+        percent = (self.value / self.limit) * 100
+
+        if percent >= 100:
+            return "OVER LIMIT"
+        elif percent >= 90:
+            return "WARNING"
+        else:
+            return "OK"
+
 
 
 # ==================================================================== RECORDS
@@ -35,7 +53,22 @@ Delete these instructions as you replace them with your code.
 #                lines from a file and returns a list of Record objects. Make
 #                your own data file, one record per line.
 
-records = []   # replace with your code
+
+def load_records(path):
+    """Load server records from a file."""
+    records = []
+
+    with open(path, "r") as f:
+        for line in f:
+            label, value, limit = line.strip().split(",")
+            records.append(
+                Record(label, float(value), float(limit))
+            )
+
+    return records
+
+
+records = load_records("servers.txt")
 
 
 # ==================================================================== OUTPUT
@@ -49,15 +82,34 @@ records = []   # replace with your code
 #                as Week 4. If you want it to live ON the object instead,
 #                that is a stretch worth trying - but a variable is enough.)
 
+
+
+
+over_limit_count = 0
+
 for record in records:
+    result = record.status()
+
     print()
     print("=" * 34)
-    print(f"  RECORD CHECK  -  {record.label}")
+    print(f"  RECORD CHECK - {record.label}")
     print("=" * 34)
 
-    # your report lines go here
+    print(f"Hostname: {record.label}")
+    print(f"GB Used:  {record.value}")
+    print(f"GB Total: {record.limit}")
+    print(f"Status:   {result}")
 
     print("=" * 34)
+
+    if result == "OVER LIMIT":
+        over_limit_count += 1
+
+print()
+print(f"{over_limit_count} of {len(records)} servers are OVER LIMIT")
+
+
+
 
 
 # ==========================================================================
@@ -67,3 +119,14 @@ for record in records:
 #    [ ] Check every method only reads/changes its OWN object (self) -
 #        nothing reaches outside itself
 #    [ ] Check every method and __init__ has a one-line docstring
+
+# Check that two objects are independent
+
+r1 = Record("srv-01", 87, 120)
+r2 = Record("srv-02", 120, 100)
+
+r1.value = 95
+
+print("Independence check:")
+print(r1.label, r1.value)
+print(r2.label, r2.value)

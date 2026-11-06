@@ -20,8 +20,18 @@ Delete these instructions as you replace them with your code.
 #    one-line docstring.
 
 # your function(s) go here
+def check_record(value, limit):
+    """Check if the value is over the limit."""
+    if value >= limit:
+        return "OVER LIMIT"
+    else:
+        return "OK"
 
+def print_report(label, status):
+    """Print the report for a record."""
+    print(f"Record {label}: {status}")
 
+   
 # ====================================================================== STORE
 # 2. Get your records into a list of dicts, each shaped like:
 #        {"label": ..., "value": ..., "limit": ...}
@@ -33,7 +43,11 @@ Delete these instructions as you replace them with your code.
 #    Excellent : also write the results out to a new file (one line per
 #                record: label, status), as well as printing them.
 
-records = []   # replace with your code
+records = [
+    {"label": "10.0.0.5", "value": 12, "limit": 400},
+    {"label": "10.0.0.6", "value": 450, "limit": 400},
+    {"label": "10.0.0.7", "value": 25, "limit": 400}
+]
 
 
 # =============================================================== PROCESS + OUTPUT
@@ -43,6 +57,18 @@ records = []   # replace with your code
 #                print that once, after the loop ends.
 
 # your loop goes here
+results_file = open("results.txt", "w")
+over_limit_count = 0
+for record in records:
+    status = check_record(record["value"], record["limit"])
+    print_report(record["label"], status)
+    results_file.write(f'{record["label"]},{status}\n')
+    if status == "OVER LIMIT":
+        over_limit_count += 1
+
+print_report("Total records over limit", over_limit_count)
+results_file.close()
+       
 
 
 # ==========================================================================

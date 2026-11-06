@@ -2,8 +2,8 @@
 RECORD CHECK  -  my version
 ===========================
 
-Name  :
-Lane  :  AI / Cyber / IT      (delete two)
+Name  :sumaya
+Lane  :   IT
 Date  :
 
 Run it:   python template.py
@@ -19,7 +19,7 @@ import pandas as pd
 #    plus at least 5 data rows: label,value,limit (or your lane's own field
 #    names - same shape, different words).
 
-df = None   # replace with pd.read_csv("your_file.csv")
+df = pd.read_csv("servers.csv")
 
 
 # ================================================================= PROCESS
@@ -29,8 +29,10 @@ df = None   # replace with pd.read_csv("your_file.csv")
 #    lambda - "OVER LIMIT" (100%+), "WARNING" (90%+), otherwise "OK".
 
 # your column(s) go here
-
-
+df["percent"] = (df["used_gb"] / df["total_gb"]) * 100
+df["status"] = df["percent"].apply(
+    lambda p: "OVER LIMIT" if p >= 100 else "WARNING" if p >= 90 else "OK"
+)
 # ================================================================== OUTPUT
 # 3. Print the DataFrame.
 #
@@ -42,8 +44,20 @@ df = None   # replace with pd.read_csv("your_file.csv")
 #                one bar chart of the counts per status.
 
 print(df)
+print(df[df["status"] != "OK"])
+print(df["status"].value_counts())
+df.to_csv("servers_report.csv", index=False)
+import matplotlib.pyplot as plt
 
+df["status"].value_counts().plot(kind="bar")
 
+plt.title("Server Status Counts")
+plt.xlabel("Status")
+plt.ylabel("Number of Servers")
+
+plt.tight_layout()
+plt.savefig("server_status.png")
+plt.show()
 # ==========================================================================
 # 4. Before you finish:
 #    [ ] Run it and check the percent/status columns by hand for one row
